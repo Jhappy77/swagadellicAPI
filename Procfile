@@ -1,0 +1,1 @@
+web: gunicorn swagadellicAPI.wsgi

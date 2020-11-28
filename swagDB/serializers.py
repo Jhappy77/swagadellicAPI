@@ -11,10 +11,15 @@ class TheatreSerializer(serializers.ModelSerializer):
         model = Theatre
         fields = ("id", "theatre_name", "address", "theatre_type")
 
+class SeatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ("seat_no",)
+
 class ScreeningSerializer(serializers.ModelSerializer):
     class Meta:
         model = Screening
-        fields = ("id", "movie_id", "screening_id", "screening_time")
+        fields = ("id", "screening_time") #"movie_id", "theatre_id", 
 
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:

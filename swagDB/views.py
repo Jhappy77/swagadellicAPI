@@ -47,7 +47,7 @@ class login(APIView):
         res = RegisteredUserSerializer(queryset[0])
         return Response(res.data)
 
-class theatreScreening(APIView):
+class screeningByTheatreMovie(APIView):
     def get(self, request):
         if(request.method != 'GET'):
             return Response({'Error': 'Method not GET'}, status=status.HTTP_400_BAD_REQUEST)
@@ -55,9 +55,11 @@ class theatreScreening(APIView):
         movieId = request.query_params.get('movieId', None)
         if ((theatreId is None) or (movieId is None)):
             return Response({'Error': 'Query must include theatreId and movieId'}, status=status.HTTP_400_BAD_REQUEST)
-        queryset = Theatre.objects.all().filter(theatre_id=theatreId).filter(movie_id=movieId)
-        res = ScreeningSerializer(queryset)
-        return Response(res.data)
+        queryset = Screening.objects.all().filter(theatre_id=theatreId).filter(movie_id=movieId)
+        reslist = []
+        for query in queryset:
+            reslist.append(ScreeningSerializer(query).data)
+        return Response(reslist)
 
 class theatreWithMovie(APIView):
     def get(self, request):
@@ -67,8 +69,38 @@ class theatreWithMovie(APIView):
         if ((movieId is None)):
             return Response({'Error': 'Query must include movieId'}, status=status.HTTP_400_BAD_REQUEST)
         queryset = Screening.objects.filter(movie_id=movieId).select_related('theatre_id')
-        res = TheatreSerializer(queryset)
-        return Response(res.data)
+        reslist = []
+        for screening in queryset:
+            reslist.append(TheatreSerializer(screening.theatre_id).data)
+        return Response(reslist)
+
+class bookedSeats(APIView):
+    def get(self, request):
+        if(request.method != 'GET'):
+            return Response({'Error': 'Method not GET'}, status=status.HTTP_400_BAD_REQUEST)
+        screeningId = request.query_params.get('screeningId', None)
+        if ((screeningId is None)):
+            return Response({'Error': 'Query must include screeningId'}, status=status.HTTP_400_BAD_REQUEST)
+        tickets = Ticket.objects.filter(screening_id=screeningId)
+        reslist = []
+        for ticket in tickets:
+            reslist.append(SeatSerializer(ticket).data)
+        seatlist = []
+        for res in reslist:
+            seatlist.append(res.get("seat_no"))
+        return Response(seatlist)
+
+class lookForTicket(APIView):
+    def get(self, request):
+        if(request.method != 'GET'):
+            return Response({'Error': 'Method not GET'}, status=status.HTTP_400_BAD_REQUEST)
+        ticketId = request.query_params.get('ticketId', None)
+        if ((ticketId is None)):
+            return Response({'Error': 'Query must include ticketId'}, status=status.HTTP_400_BAD_REQUEST)
+        tickets = Ticket.objects.filter(ticket_id=ticketId)
+        if not tickets.exists():
+            return Response ({'Error': 'No ticket with requested id exists'}, status=status.HTTP_204_NO_CONTENT)
+        return Response(TicketSerializer(tickets[0]).data)
 
 class movies(generics.ListAPIView):
     queryset = Movie.objects.all()
@@ -108,6 +140,6 @@ class savePayment(generics.CreateAPIView):
 
 #     return HttpResponse("Movie name was: " + movieName)
 
-def screening (request):
-    screeningName = request.content_params.get('screeningName', 'Jeff')
-    return HttpResponse(screeningName)
+# def screening (request):
+#     screeningName = request.content_params.get('screeningName', 'Jeff')
+#     return HttpResponse(screeningName)

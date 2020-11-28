@@ -25,6 +25,7 @@ class Movie(models.Model):
     )
     release_date = models.DateField('release date')
     length = models.IntegerField(default=90)
+    image_link = models.URLField(max_length=200, null=True, blank=True, default=None)
 
 class Theatre(models.Model):
     LARGE = 'LRG'  #30 columns 20 rows

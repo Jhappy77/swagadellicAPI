@@ -16,7 +16,6 @@ def index(request):
     return HttpResponse("Pong! You hit the swagDB index.")
 # Create your views here.
 
-
 #TODO: Should hash and salt passwords. But that's beyond the scope of this project, really
 class login(APIView):
     def get(self, request):
@@ -55,10 +54,21 @@ class theatreWithMovie(APIView):
         if ((movieId is None)):
             return Response({'Error': 'Query must include movieId'}, status=status.HTTP_400_BAD_REQUEST)
         queryset = Screening.objects.filter(movie_id=movieId).select_related('theatre_id')
-        reslist = set()
-        for screening in queryset:
-            reslist.add(TheatreSerializer(screening.theatre_id).data)
+        # reslist = set()
+        # for screening in queryset:
+        #     theatreInfo = TheatreSerializer(screening.theatre_id).data
+        #     reslist.add(theatreInfo)
+        theatres = queryset.values('theatre_id').distinct()
+        theatreList = set()
+        for th in theatres:
+            theatreList.add(th.get("theatre_id"))
+
+        theatre_set = Theatre.objects.filter(id__in=theatreList)
+        reslist = []
+        for theat in theatre_set:
+            reslist.append(TheatreSerializer(theat).data)
         return Response(reslist)
+
 
 class bookedSeats(APIView):
     def get(self, request):
@@ -87,6 +97,18 @@ class lookForTicket(APIView):
         if not tickets.exists():
             return Response ({'Error': 'No ticket with requested id exists'}, status=status.HTTP_204_NO_CONTENT)
         return Response(TicketSerializer(tickets[0]).data)
+
+# class lookForPayment(APIView):
+#     def get(self, request):
+#         if(request.method != 'GET'):
+#             return Response({'Error': 'Method not GET'}, status=status.HTTP_400_BAD_REQUEST)
+#         ticketId = request.query_params.get('paymentId', None)
+#         if ((ticketId is None)):
+#             return Response({'Error': 'Query must include paymentId'}, status=status.HTTP_400_BAD_REQUEST)
+#         tickets = Ticket.objects.filter(ticket_id=ticketId)
+#         if not tickets.exists():
+#             return Response ({'Error': 'No ticket with requested id exists'}, status=status.HTTP_204_NO_CONTENT)
+#         return Response(TicketSerializer(tickets[0]).data)
 
 class movies(generics.ListAPIView):
     queryset = Movie.objects.all()

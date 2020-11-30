@@ -69,9 +69,9 @@ class theatreWithMovie(APIView):
         if ((movieId is None)):
             return Response({'Error': 'Query must include movieId'}, status=status.HTTP_400_BAD_REQUEST)
         queryset = Screening.objects.filter(movie_id=movieId).select_related('theatre_id')
-        reslist = []
+        reslist = set()
         for screening in queryset:
-            reslist.append(TheatreSerializer(screening.theatre_id).data)
+            reslist.add(TheatreSerializer(screening.theatre_id).data)
         return Response(reslist)
 
 class bookedSeats(APIView):

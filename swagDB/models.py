@@ -27,6 +27,9 @@ class Movie(models.Model):
     length = models.IntegerField(default=90)
     image_link = models.URLField(max_length=200, null=True, blank=True, default=None)
 
+    def __str__(self):
+        return self.movie_name + " (Id = " + str(self.id) + ")"
+
 class Theatre(models.Model):
     LARGE = 'LRG'  #30 columns 20 rows
     TINY = 'TNY' # 10 columns 5 rows
@@ -48,11 +51,17 @@ class Theatre(models.Model):
         default = LARGE
     )
 
+    def __str__(self):
+        return self.theatre_name + " (Id = " + str(self.id) + ")"
+
 class Screening(models.Model):
     movie_id = models.ForeignKey(Movie, on_delete=models.CASCADE)
     theatre_id = models.ForeignKey(Theatre, on_delete=models.CASCADE)
     screening_time = models.DateTimeField('start time')
     #SEAT MAP TYPE will be included here in the future
+    def __str__(self):
+        return str(self.movie_id.movie_name) + " @"  + str(self.theatre_id.theatre_name) + " @ " + self.screening_time.strftime("%m/%d %H:%M") #strftime(self.screening_time)
+
 
 class RegisteredUser(models.Model):
     name = models.CharField(max_length=200)
@@ -66,9 +75,18 @@ class Ticket(models.Model):
     screening_id = models.ForeignKey(Screening, on_delete=models.CASCADE)
     user_id = models.ForeignKey(RegisteredUser, on_delete=models.SET_NULL, null=True, blank=True, default = None)
 
+    def __str__(self):
+        if self.user_id is not None:
+            return str(self.user_id.name) + "'s ticket for screening " + str(self.screening_id) + " seat number " + str(self.seat_no)
+        else:
+            return "Anonymous ticket for " + str(self.screening_id) + " seat number " + str(self.seat_no)
+
 class Payment(models.Model):
     amount = models.DecimalField(decimal_places=2, max_digits=5)
     user_id = models.ForeignKey(RegisteredUser, on_delete=models.SET_NULL, null=True, blank=True, default = None)
+    
+    def __str__(self):
+        return "Payment #" + str(self.id) + " by " + self.user_id
 
 class PaymentForTicket(models.Model):
     payment_id = models.ForeignKey(Payment, on_delete=models.CASCADE)

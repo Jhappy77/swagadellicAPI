@@ -16,15 +16,30 @@ class SeatSerializer(serializers.ModelSerializer):
         model = Ticket
         fields = ("seat_no",)
 
+class ScreeningComplexSerializer(serializers.ModelSerializer):
+    movie_id = MovieSerializer("movie_id")
+    theatre_id = TheatreSerializer("theatre_id")
+    class Meta:
+        model = Screening
+        fields = ("id", "screening_time", "movie_id", "theatre_id") 
+
 class ScreeningSerializer(serializers.ModelSerializer):
     class Meta:
         model = Screening
-        fields = ("id", "screening_time") #"movie_id", "theatre_id", 
+        fields = ("id", "screening_time")
+
 
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = ("ticket_id", "seat_no", "screening_id", "user_id")
+
+class TicketComplexSerializer(serializers.ModelSerializer):
+    screening_id = ScreeningComplexSerializer("screening_id")
+    class Meta:
+        model = Ticket
+        fields = ("ticket_id", "seat_no", "screening_id", "user_id")
+
 
 class SavedDebitSerializer(serializers.ModelSerializer):
     class Meta:

@@ -16,4 +16,5 @@ urlpatterns = [
     path('screening', views.screeningByTheatreMovie.as_view(), name='screening'),
     path('seats', views.bookedSeats.as_view(), name='Booked Seats'),
     path('ticket', views.lookForTicket.as_view(), name='Look for ticket'),
+    path('delete-ticket', views.destroyTicket.as_view(), name='Delete ticket'),
 ]

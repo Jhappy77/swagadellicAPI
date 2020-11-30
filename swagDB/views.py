@@ -43,7 +43,7 @@ class screeningByTheatreMovie(APIView):
         queryset = Screening.objects.all().filter(theatre_id=theatreId).filter(movie_id=movieId)
         reslist = []
         for query in queryset:
-            reslist.append(ScreeningSerializer(query).data)
+            reslist.append(ScreeningComplexSerializer(query).data)
         return Response(reslist)
 
 class theatreWithMovie(APIView):
@@ -96,19 +96,19 @@ class lookForTicket(APIView):
         tickets = Ticket.objects.filter(ticket_id=ticketId)
         if not tickets.exists():
             return Response ({'Error': 'No ticket with requested id exists'}, status=status.HTTP_204_NO_CONTENT)
-        return Response(TicketSerializer(tickets[0]).data)
+        return Response(TicketComplexSerializer(tickets[0]).data)
 
-# class lookForPayment(APIView):
-#     def get(self, request):
-#         if(request.method != 'GET'):
-#             return Response({'Error': 'Method not GET'}, status=status.HTTP_400_BAD_REQUEST)
-#         ticketId = request.query_params.get('paymentId', None)
-#         if ((ticketId is None)):
-#             return Response({'Error': 'Query must include paymentId'}, status=status.HTTP_400_BAD_REQUEST)
-#         tickets = Ticket.objects.filter(ticket_id=ticketId)
-#         if not tickets.exists():
-#             return Response ({'Error': 'No ticket with requested id exists'}, status=status.HTTP_204_NO_CONTENT)
-#         return Response(TicketSerializer(tickets[0]).data)
+class destroyTicket(APIView):
+    def get_object(self, pk):
+        try:
+            return Ticket.objects().get(ticket_id=pk)
+        except Ticket.DoesNotExist:
+            raise Http404
+    
+    def delete(self, request, pk, format=None):
+        theTicket = self.get_object(pk)
+        theTicket.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class movies(generics.ListAPIView):
     queryset = Movie.objects.all()
@@ -139,6 +139,8 @@ class saveTicket(generics.CreateAPIView):
 class savePayment(generics.CreateAPIView):
     queryset = Ticket.objects.all()
     serializer_class = PaymentCreateSerializer
+
+#class deleteTicket(generics.)
 
 
 

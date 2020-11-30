@@ -17,20 +17,6 @@ def index(request):
 # Create your views here.
 
 
-class movie(APIView):
-    #permission_classes=(IsAuthenticated,)
-    def get(self, request):
-
-        # if(request.method == 'GET'):
-        #     #dosomething
-        # elif(request.method == 'POST'):
-
-        msg = request.query_params.get('movieName', "World")
-        reply = 'Hello ' + msg + ' !'
-        content = {'message': reply}
-        return Response(content)
-
-
 #TODO: Should hash and salt passwords. But that's beyond the scope of this project, really
 class login(APIView):
     def get(self, request):

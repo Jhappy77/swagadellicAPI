@@ -102,6 +102,18 @@ class lookForTicket(APIView):
             return Response ({'Error': 'No ticket with requested id exists'}, status=status.HTTP_204_NO_CONTENT)
         return Response(TicketSerializer(tickets[0]).data)
 
+# class lookForPayment(APIView):
+#     def get(self, request):
+#         if(request.method != 'GET'):
+#             return Response({'Error': 'Method not GET'}, status=status.HTTP_400_BAD_REQUEST)
+#         ticketId = request.query_params.get('paymentId', None)
+#         if ((ticketId is None)):
+#             return Response({'Error': 'Query must include paymentId'}, status=status.HTTP_400_BAD_REQUEST)
+#         tickets = Ticket.objects.filter(ticket_id=ticketId)
+#         if not tickets.exists():
+#             return Response ({'Error': 'No ticket with requested id exists'}, status=status.HTTP_204_NO_CONTENT)
+#         return Response(TicketSerializer(tickets[0]).data)
+
 class movies(generics.ListAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer

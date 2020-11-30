@@ -84,9 +84,12 @@ class Ticket(models.Model):
 class Payment(models.Model):
     amount = models.DecimalField(decimal_places=2, max_digits=5)
     user_id = models.ForeignKey(RegisteredUser, on_delete=models.SET_NULL, null=True, blank=True, default = None)
-    
+
     def __str__(self):
-        return "Payment #" + str(self.id) + " by " + self.user_id
+        if self.user_id is not None:
+            return "Payment #" + str(self.id) + " by " + str(self.user_id)
+        else:
+            return "Payment #" + str(self.id) + " by an anonymous user"
 
 class PaymentForTicket(models.Model):
     payment_id = models.ForeignKey(Payment, on_delete=models.CASCADE)

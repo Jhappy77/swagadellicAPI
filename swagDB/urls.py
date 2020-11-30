@@ -17,4 +17,5 @@ urlpatterns = [
     path('seats', views.bookedSeats.as_view(), name='Booked Seats'),
     path('ticket', views.lookForTicket.as_view(), name='Look for ticket'),
     path('delete-ticket', views.destroyTicket.as_view(), name='Delete ticket'),
+    #path(r^'delete-ticket/(?P<pk>)/$', views.destroyTicket.as_view(), name='Delete ticket'),
 ]

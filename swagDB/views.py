@@ -101,12 +101,19 @@ class lookForTicket(APIView):
 class destroyTicket(APIView):
     def get_object(self, pk):
         try:
-            return Ticket.objects().get(ticket_id=pk)
+            returnval = Ticket.objects.get(ticket_id=pk)
         except Ticket.DoesNotExist:
-            raise Http404
+            returnval = None
+        return returnval
     
-    def delete(self, request, pk, format=None):
-        theTicket = self.get_object(pk)
+    def delete(self, request, format=None):
+        mypk = request.query_params.get('pk', None)
+        if ((mypk is None)):
+            return Response({'Error': 'Query must include query parameter pk'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        theTicket = self.get_object(mypk)
+        if theTicket is None:
+            return Response({'Error': 'The ticket you tried to delete does not exist'}, status=status.HTTP_404_NOT_FOUND)
         theTicket.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
